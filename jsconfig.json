@@ -1,7 +1,8 @@
 {
+  "noImplicitAny": false,
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"]
     }
-  }
+  },
 }
