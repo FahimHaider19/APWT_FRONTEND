@@ -8,7 +8,6 @@ import { Formik, Form, Field, useField, useFormikContext } from "formik";
 import { signIn } from "next-auth/react";
 import * as Yup from "yup";
 import Link from 'next/link'
-let game = null;
 
 const categories = [
   {
@@ -29,51 +28,48 @@ const schema = Yup.object({
   gameName: Yup.string()
     .required("Required"),
   gamePrice: Yup.number()
-    .required("Required")
-    .min(0, "Must be greater than 0"),
-  gameDescription: Yup.string()
     .required("Required"),
-  gamePublisher: Yup.string()
-    .required("Required"),
-  gameReleaseDate: Yup.date()
-    .required("Required"),
-  gameRating: Yup.number("")
-    .required("Required")
-    .min(0, "Must be greater than 0")
-    .max(5, "Must be less than 5"),
-  systemRequirments: Yup.string()
-    .required("Required"),
+    // .min(0, "Must be greater than 0"),
+  gameDescription: Yup.string(),
+    // .required("Required"),
+  gamePublisher: Yup.string(),
+    // .required("Required"),
+  gameReleaseDate: Yup.date(),
+    // .required("Required"),
+  gameRating: Yup.number(),
+    // .required("Required")
+    // .min(0, "Must be greater than 0")
+    // .max(5, "Must be less than 5"),
+  systemRequirments: Yup.string(),
+    // .required("Required"),
   gameCategory: Yup.array()
 });
 
-// const sub = async(values) => {
-//   alert(await axios.patch(`http://localhost:3000/game/${game.gameId}`, { data:{values} }))
-// }
-
 const handleSubmit = async (values) => {
-  const res = await fetch(`http://localhost:3000/game/${game.gameId}`, {
-    method: "put",
+  let array = []
+  for (let i = 0; i < categories.length; i++) {
+    for(let j = 0; j < values.gameCategory.length; j++)
+      if (categories[i].categoryName === values.gameCategory[j]) {
+        array.push(categories[i])
+      }
+  }
+  console.log(JSON.stringify(values))
+  values.gameCategory = array
+  const res = await fetch(`http://localhost:3000/game`, {
+    method: "POST",
     body: JSON.stringify(values),
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json"
     }
   })
-  window.location.replace(`http://localhost:3001/dashboard/game/${game.gameId}`);
-  console.log(res)
-  // const result = axios(`http://localhost:3000/game/${game.gameId}`, {
-  //   method: "put",
-  //   data: values,
-  //   headers: {
-  //     "Accept": "application/json",
-  //     "Content-Type": "application/json"
-  //   }
-  // });
+  // console.log(res)
   alert(JSON.stringify(values, null, 2));
   if (res.error) console.log(res.error)
-  if(res.ok){
-    alert('Udpate success')
+  if (res.ok) {
+    alert('Added game successfully')
     const router = useRouter()
+    // window.location.replace(`http://localhost:3001/dashboard/game`);
   }
 };
 
@@ -135,38 +131,32 @@ const TextArea = ({ label, value, ...props }) => {
   );
 };
 
-const EditGame = async ({ params }) => {
-  game = await (await fetch(`http://localhost:3000/game/details/${params.id}`)).json();
-  if(!game) return <div>Game not found</div>
-  console.log(game)
+export default async function AddGame() {
   return (
     <Formik
       initialValues={{
-        gameId: game.gameId,
-        gameName: game.gameName,
-        gamePrice: game.gamePrice,
-        gameDescription: game.gameDescription,
-        gamePublisher: game.gamePublisher,
-        gameReleaseDate: game.gameReleaseDate,
-        gameRating: game.gameRating,
-        gameCategory: [],
-        discount: game.discount,
-        systemRequirments: game.systemRequirments,
+        gameName: '',
+        gamePrice: '',
+        gameDescription: '',
+        gamePublisher: '',
+        gameReleaseDate: '',
+        gameRating: '',
+        discount: '',
+        categories: [],
+        systemRequirments: '',
       }}
       validationSchema={schema}
       onSubmit={handleSubmit}
     >
-    <Form className="p-6 space-y-8 divide-y divide-gray-200">
-      <div className="space-y-8 divide-y divide-gray-200">
-        <div>
+      <Form className="p-6 space-y-8 divide-y divide-gray-200">
+        <div className="space-y-8 divide-y divide-gray-200">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Edit Game Info</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              This information will be displayed publicly so be careful before saving.
-            </p>
-          </div>
-
-          
+            <div>
+              <h3 className="text-lg font-medium leading-6 text-gray-900">Edit Game Info</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                This information will be displayed publicly so be careful before saving.
+              </p>
+            </div>
             <div className="space-y-6">
               <TextInput
                 label="Title"
@@ -195,8 +185,7 @@ const EditGame = async ({ params }) => {
               <TextInput
                 label="Release Date"
                 name='gameReleaseDate'
-                type="text"
-                required
+                type="datetime"
               />
               <TextInput
                 label="Discount"
@@ -204,25 +193,23 @@ const EditGame = async ({ params }) => {
                 type="number"
                 required
               />
-              <TextArea
-                value={game.gameDescription}
+              <TextInput
                 label="Description"
                 name='gameDescription'
                 required
               />
-              <TextArea
-                value={game.systemRequirments}  
+              <TextInput
                 label="System Requirments"
                 name='systemRequirments'
                 required
               />
             </div>
-        </div>
-
-        <div className="pt-3">
-          <div>
-            <h3 className="text-lg my-2 font-medium leading-6 text-gray-900">Genre</h3>
           </div>
+
+          <div className="pt-3">
+            <div>
+              <h3 className="text-lg my-2 font-medium leading-6 text-gray-900">Genre</h3>
+            </div>
             <div role="group" aria-labelledby="checkbox-group">
               {categories.map((genre) => (
                 <label className='font-medium text-gray-700 mr-2'>
@@ -237,56 +224,26 @@ const EditGame = async ({ params }) => {
                 </label>
               ))}
             </div>
-        </div>
-      </div>
+          </div>
+        </div> 
 
-      <div className="pt-3">
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Save
-          </button>
+        <div className="pt-3">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Save
+            </button>
+          </div>
         </div>
-      </div>
-    </Form>
+      </Form>
     </Formik >
-    // <Formik
-    //   initialValues={{
-    //     checked: [],
-    //   }}
-    //   onSubmit={async (values) => {
-    //     alert(JSON.stringify(values, null, 2));
-    //   }}
-    // >
-    //     <Form>
-    //       <div id="checkbox-group">Checked</div>
-    //       <div role="group" aria-labelledby="checkbox-group">
-    //         <label>
-    //           <Field type="checkbox" name="checked" value="One" />
-    //           One
-    //         </label>
-    //         <label>
-    //           <Field type="checkbox" name="checked" value="Two" />
-    //           Two
-    //         </label>
-    //         <label>
-    //           <Field type="checkbox" name="checked" value="Three" />
-    //           Three
-    //         </label>
-    //       </div>
-
-    //       <button type="submit">Submit</button>
-    //     </Form>
-    // </Formik>
   )
 }
-
-export default EditGame;

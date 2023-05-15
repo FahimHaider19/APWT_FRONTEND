@@ -13,9 +13,9 @@ export const metadata = {
 }
 
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, session }) {
   const pathname = usePathname()
-  if (pathname === '/login' || pathname === '/register') {
+  if (pathname === '/auth/login' || pathname === '/auth/register') {
     console.log('login or register')
     return (
       <html lang="en">
@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className='h-full'>
       <body className='h-full'>
-        <SessionProvider>
+        <SessionProvider session={session}>
           <Header />
           <main>{children}</main>
         </SessionProvider>

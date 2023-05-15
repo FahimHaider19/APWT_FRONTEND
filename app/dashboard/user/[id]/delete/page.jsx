@@ -5,31 +5,43 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 const handleSubmit = async (id) => {
-  
-  const res = await fetch(`http://localhost:3000/game/${id}`, {
+  // alert('clicked')
+  const res = await fetch(`http://localhost:3000/user/${id}`, {
     method: "delete",
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json"
     }
   })
-  alert('clicked')
-  console.log(res)  
+  console.log(res)
   return true;
 }
-const DeleteGame = async ({ params: { id } }) => {
+const Deleteuser = async ({ params: { id } }) => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 w-full">
       <div className="flex items-center justify-center align-center h-full">
         <div className="bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Delete your account</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900">Delete this user?</h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
               <p>Once you delete your account, you will lose all data associated with it.</p>
             </div>
             <div className="mt-5">
               <button
-                onClick={handleSubmit(id)}
+                onClick={ async ()=>{
+                  const res = await fetch(`http://localhost:3000/user/${id}`, {
+                    method: "delete",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json"
+                    }
+                  })
+                  if(res.ok){
+                    alert('Delete success')
+                    // const router = useRouter()
+                    window.location.replace(`http://localhost:3001/dashboard/user`);
+                  }
+                }}
                 type="button"
                 className="inline-flex items-center justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 font-medium text-red-700 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:text-sm"
               >
@@ -43,4 +55,4 @@ const DeleteGame = async ({ params: { id } }) => {
   )
 }
 
-export default DeleteGame;
+export default Deleteuser;

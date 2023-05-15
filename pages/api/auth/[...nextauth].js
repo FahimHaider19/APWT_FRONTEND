@@ -44,7 +44,7 @@ export const authOptions = {
 
         console.log({ user });
 
-        if ( user.access_token)
+        if (user.access_token)
           return user;
         else 
           return null;
@@ -69,8 +69,7 @@ export const authOptions = {
   },
 
   pages: {
-    signIn: "/login",
-    signOut: '/signout',
+    signIn: "/auth/login",
     error: '/error',
   },
 };

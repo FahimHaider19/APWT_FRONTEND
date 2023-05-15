@@ -19,13 +19,13 @@ async function fetchRepos(gameId) {
   return response.  data;
 }
 
-const GameDetailsPage = async ({ params: { id } }) => {
-  const game = await fetchRepos(id);
+const GameDetailsPage = async ({ params }) => {
+  const game = await fetchRepos(params.id);
   if(game=='') return <div>Game not found</div>
   console.log(game);
   return (
     <Suspense fallback={<div>Loading data...</div>}>
-    <div className="p-4 overflow-hidden bg-white shadow">
+    <div className="p-4 w-full overflow-hidden bg-white shadow">
       <div className="px-4 py-5 sm:px-6">
         <h3 className="text-lg font-medium leading-6 text-gray-900">Game Info</h3>
         <p className="mt-1 max-w-2xl text-sm text-gray-500">Game details and information.</p>

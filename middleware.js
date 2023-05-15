@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { useSession } from "next-auth/react"
 export default withAuth(
   function middleware(req, token) {
-    console.log("token: ", req.nextauth.token);
-    console.log("session: ", req.nextauth.session);
+    console.log("token: ", req.nextauth.token);  
   },
   {
     callbacks: {

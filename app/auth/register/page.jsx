@@ -7,22 +7,40 @@ import * as Yup from "yup";
 import Link from 'next/link'
 
 const schema = Yup.object({
+  name: Yup.string()
+    .required("Required")
+    .matches(/^[a-zA-Z_ ]+$/, "Must be only letters"),
   email: Yup.string()
     .email("Invalid email addresss`")
     .required("Required"),
   password: Yup.string()
-    .min(8, "Must be 8 characters or more")
     .required("Required")
+    .min(8, "Must be 8 characters or more")
+    .matches(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$/, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."),
+  phone: Yup.string()
+    .required("Required"),
+
 });
 
 const handleSubmit = async (values) => {
   console.log(values)
-  const result = await signIn("credentials", {
-    email: values.email,
-    password: values.password,
-    redirect: true,
-    callbackUrl: "/game/1",
-  });
+  const res = await fetch(`http://localhost:3000/register`, {
+    method: "POST",
+    body: JSON.stringify(values),
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    }
+  })
+  // console.log(res)
+  alert(JSON.stringify(values, null, 2));
+  if (res.error) console.log(res.error)
+  if (res.ok) {
+    alert('Registation successful')
+    // const router = useRouter()
+    window.location.replace(`http://localhost:3001/game/1`);
+  }
+  if (result.error) console.log(result.error)
   console.log(result)
 };
 
@@ -59,7 +77,7 @@ const TextInput = ({ label, ...props }) => {
   );
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <>
       <div className="flex min-h-screen flex-col content-center justify-center py-12 sm:px-6 lg:px-8">
@@ -71,18 +89,27 @@ export default function LoginPage() {
                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                 alt="Your Company"
               />
-              <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
+              <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Create a new account</h2>
             </div>
             <Formik
               initialValues={{
+                name: "",
                 email: "",
                 password: "",
-                rememberme: false, // added for our checkbox
+                phone: "",
+                role: "customer"
               }}
               validationSchema={schema}
               onSubmit={handleSubmit}
             >
               <Form className="space-y-6">
+                <TextInput
+                  id="name"
+                  label="Name"
+                  name="name"
+                  type="text"
+                  required
+                />
                 <TextInput
                   id="email"
                   label="Email"
@@ -95,6 +122,13 @@ export default function LoginPage() {
                   label="Password"
                   name="password"
                   type="password"
+                  required
+                />
+                <TextInput
+                  id="phone"
+                  label="Phone"
+                  name="phone"
+                  type="text"
                   required
                 />
                 <div className="flex items-center justify-between">
@@ -126,7 +160,7 @@ export default function LoginPage() {
                   </button>
                 </div>
               </Form>
-             </Formik>
+            </Formik>
 
             <div className="my-4">
               <div className="relative">
@@ -134,11 +168,11 @@ export default function LoginPage() {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-2 text-gray-500">Don't Have an Account? </span>
+                  <span className="bg-white px-2 text-gray-500">Already Have an Account? </span>
                 </div>
               </div>
 
-              <Link href='register'>
+              <Link href='/auth/login'>
                 <button
                   type="submit"
                   className="group mt-3 relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

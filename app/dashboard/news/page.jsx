@@ -3,7 +3,7 @@ import Link from "next/link";
 
 async function fetchRepos() {
   const response = await axios(
-    `http://localhost:3000/game/details`,
+    `http://localhost:3000/news`,
     {
       next: {
         revalidate: 60,
@@ -13,23 +13,23 @@ async function fetchRepos() {
   return response.data;
 }
 
-const GameTable = async () => {
-  const games = await fetchRepos();
+const NewsTable = async () => {
+  const newsData = await fetchRepos();
   return (
     <div className="p-4 sm:p-6 lg:p-8 w-full">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Games</h1>
+          <h1 className="text-xl font-semibold text-gray-900">News</h1>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all the games in the including their details
+            A list of all the news in the system including their details
           </p>
         </div>
-        <Link href="/dashboard/game/add" className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <Link href="/dashboard/news/add" className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
           >
-            Add user
+            Add News
           </button>
         </Link>
       </div>
@@ -41,56 +41,39 @@ const GameTable = async () => {
                 <thead className="bg-gray-50">
                   <tr className="w-full">
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                      Name
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      News Title
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      News Time
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Game
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Price
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Publisher
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Developer
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">View</span>
-                      <span className="sr-only">Edit</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {games.map((game) => (
-                    <tr key={game.gameId}>
+                  {newsData.map((news) => (
+                    <tr key={news.newsId}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
-                            <img className="h-10 w-10 rounded-full" src='#' alt="" />
-                          </div>
                           <div className="ml-4">
-                            <div className="font-medium text-gray-900">{game.gameName}</div>
+                            <div className="font-medium text-gray-900">{news.newsTitle}</div>
                             {/* <div className="text-gray-500">{person.email}</div> */}
                           </div>
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        <div className="text-gray-900">{game.gamePrice}</div>
-                        {/* <div className="text-gray-500">{person.department}</div> */}
+                        {news.newsDescription}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {game.gamePublisher}
+                        {news.newsDate}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{game.gamePublisher}</td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <Link href={`/dashboard/game/${game.gameId}`} className="px-1 text-indigo-600 hover:text-indigo-900">
-                          View
-                        </Link>
-                        <Link href={`/dashboard/game/${game.gameId}/edit`} className="px-1 text-indigo-600 hover:text-indigo-900">
-                          Edit
-                        </Link>
-                        <Link href={`/dashboard/game/${game.gameId}/delete`} className="px-1 text-indigo-600 hover:text-indigo-900">
-                          Delete
-                        </Link>
-                      </td>
+                      <Link href={`/dashboard/review/game/${news.game.gameId}`}>
+                        <td className="px-1 py-3 text-indigo-600 hover:text-indigo-900">{news.game.gameName}</td>
+                      </Link>
                     </tr>
                   ))}
                 </tbody>
@@ -103,4 +86,4 @@ const GameTable = async () => {
   )
 }
 
-export default GameTable;
+export default NewsTable;
